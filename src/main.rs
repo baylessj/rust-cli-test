@@ -1,4 +1,7 @@
+mod command;
+
 use clap::Parser;
+use command::vexcom_command;
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
@@ -18,4 +21,5 @@ fn main() {
    for _ in 0..args.count {
        println!("Hello {}!", args.name)
    }
+   vexcom_command("test").expect("Vexcom command failed");
 }
