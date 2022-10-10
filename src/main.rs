@@ -16,18 +16,22 @@ struct Cli {
 
 #[derive(Subcommand, Debug)]
 enum ConductorCommands {
+    /// Create a New Project. Alias: "n"
+    #[command(alias("n"))]
     New,
 }
 
 #[derive(Subcommand)]
 enum Commands {
     /// Build a project
+    #[command(alias("m"))]
     Make,
 
     /// Example VEXCOM call
     VexcomTest,
 
     /// Super Basic Conductor rewrite
+    #[command(alias("c"))]
     Conductor {
         #[command(subcommand)]
         command: ConductorCommands,
