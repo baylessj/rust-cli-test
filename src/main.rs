@@ -1,9 +1,7 @@
 mod command_helpers;
 
 use clap::{Parser, Subcommand};
-use command_helpers::{make, vexcom_command};
-
-use crate::command_helpers::display_error;
+use command_helpers::{display_error, make, new_project, vexcom_command};
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -16,6 +14,11 @@ struct Cli {
     command: Commands,
 }
 
+#[derive(Subcommand, Debug)]
+enum ConductorCommands {
+    New,
+}
+
 #[derive(Subcommand)]
 enum Commands {
     /// Build a project
@@ -23,6 +26,12 @@ enum Commands {
 
     /// Example VEXCOM call
     VexcomTest,
+
+    /// Super Basic Conductor rewrite
+    Conductor {
+        #[command(subcommand)]
+        command: ConductorCommands,
+    },
 }
 
 fn main() {
@@ -31,6 +40,9 @@ fn main() {
     let command_result = match args.command {
         Commands::Make => make(),
         Commands::VexcomTest => vexcom_command("test"),
+        Commands::Conductor {
+            command: ConductorCommands::New,
+        } => new_project(),
     };
 
     match command_result {
