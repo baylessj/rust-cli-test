@@ -7,6 +7,13 @@ pub fn vexcom_command(command: &str) -> Result<String, Box<dyn std::error::Error
     Ok(output.status.to_string())
 }
 
+pub fn make() -> Result<String, Box<dyn std::error::Error>> {
+    // check if arm-none-eabi-g++ exists?
+    // check that we're in a pros project?
+    let output = std::process::Command::new("make").output()?;
+    Ok(output.status.to_string())
+}
+
 #[derive(Serialize, Debug)]
 struct ErrorMessage<'a> {
     name: &'a str,
@@ -24,6 +31,6 @@ pub fn display_error(is_json: bool, name: &str, message: String) {
             .unwrap()
         )
     } else {
-        println!("Test")
+        println!("Failed")
     }
 }

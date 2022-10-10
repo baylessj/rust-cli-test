@@ -1,7 +1,7 @@
 mod command_helpers;
 
 use clap::{Parser, Subcommand};
-use command_helpers::vexcom_command;
+use command_helpers::{make, vexcom_command};
 
 use crate::command_helpers::display_error;
 
@@ -13,22 +13,27 @@ struct Cli {
     json: bool,
 
     #[command(subcommand)]
-    command: Option<Commands>,
+    command: Commands,
 }
 
 #[derive(Subcommand)]
 enum Commands {
     /// Build a project
     Make,
+
+    /// Example VEXCOM call
+    VexcomTest,
 }
 
 fn main() {
     let args = Cli::parse();
 
-    // println!("Hello {}!", args.name);
-    println!("{}", args.json);
+    let command_result = match args.command {
+        Commands::Make => make(),
+        Commands::VexcomTest => vexcom_command("test"),
+    };
 
-    match vexcom_command("test") {
+    match command_result {
         Ok(_) => println!("Success"),
         Err(e) => display_error(args.json, "Command Failed", e.to_string()),
     }
