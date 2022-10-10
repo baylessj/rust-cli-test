@@ -1,25 +1,35 @@
-mod command;
+mod command_helpers;
 
-use clap::Parser;
-use command::vexcom_command;
+use clap::{Parser, Subcommand};
+use command_helpers::vexcom_command;
 
-#[derive(Parser, Debug)]
-#[clap(author, version, about, long_about = None)]
-struct Args {
-    /// Name of the person to greet
-    #[clap(short, long, value_parser)]
-    name: String,
+use crate::command_helpers::display_error;
 
-    /// Number of times to greet
-    #[clap(short, long, value_parser, default_value_t = 1)]
-    count: u8,
+#[derive(Parser)]
+#[command(author, version, about, long_about = None)]
+struct Cli {
+    /// Enables JSON output for machine parsing
+    #[clap(short, long, value_parser, default_value_t = false)]
+    json: bool,
+
+    #[command(subcommand)]
+    command: Option<Commands>,
+}
+
+#[derive(Subcommand)]
+enum Commands {
+    /// Build a project
+    Make,
 }
 
 fn main() {
-    let args = Args::parse();
+    let args = Cli::parse();
 
-   for _ in 0..args.count {
-       println!("Hello {}!", args.name)
-   }
-   vexcom_command("test").expect("Vexcom command failed");
+    // println!("Hello {}!", args.name);
+    println!("{}", args.json);
+
+    match vexcom_command("test") {
+        Ok(_) => println!("Success"),
+        Err(e) => display_error(args.json, "Command Failed", e.to_string()),
+    }
 }
