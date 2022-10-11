@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use semver::Version;
 use serde::Deserialize;
 
 const MAINLINE_LOCATION: &str = "https://purduesigbots.github.io/pros-mainline/pros-mainline.json";
@@ -29,7 +30,7 @@ struct TemplateData {
     pyobject: String,
     supported_kernels: Option<String>,
     target: String,
-    version: String,
+    version: Version,
 }
 
 pub fn new_project() -> Result<String, Box<dyn std::error::Error>> {
