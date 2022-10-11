@@ -1,21 +1,56 @@
-use clap::Parser;
+mod command_helpers;
 
-#[derive(Parser, Debug)]
-#[clap(author, version, about, long_about = None)]
-struct Args {
-    /// Name of the person to greet
-    #[clap(short, long, value_parser)]
-    name: String,
+use clap::{Parser, Subcommand};
+use command_helpers::{display_error, make, new_project, vexcom_command};
 
-    /// Number of times to greet
-    #[clap(short, long, value_parser, default_value_t = 1)]
-    count: u8,
+#[derive(Parser)]
+#[command(author, version, about, long_about = None)]
+struct Cli {
+    /// Enables JSON output for machine parsing
+    #[clap(short, long, value_parser, default_value_t = false)]
+    json: bool,
+
+    #[command(subcommand)]
+    command: Commands,
+}
+
+#[derive(Subcommand, Debug)]
+enum ConductorCommands {
+    /// Create a New Project. Alias: "n"
+    #[command(alias("n"))]
+    New,
+}
+
+#[derive(Subcommand)]
+enum Commands {
+    /// Build a project
+    #[command(alias("m"))]
+    Make,
+
+    /// Example VEXCOM call
+    VexcomTest,
+
+    /// Super Basic Conductor rewrite
+    #[command(alias("c"))]
+    Conductor {
+        #[command(subcommand)]
+        command: ConductorCommands,
+    },
 }
 
 fn main() {
-    let args = Args::parse();
+    let args = Cli::parse();
 
-   for _ in 0..args.count {
-       println!("Hello {}!", args.name)
-   }
+    let command_result = match args.command {
+        Commands::Make => make(),
+        Commands::VexcomTest => vexcom_command("test"),
+        Commands::Conductor {
+            command: ConductorCommands::New,
+        } => new_project(),
+    };
+
+    match command_result {
+        Ok(_) => println!("Success"),
+        Err(e) => display_error(args.json, "Command Failed", e.to_string()),
+    }
 }
