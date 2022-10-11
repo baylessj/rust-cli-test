@@ -1,7 +1,9 @@
 mod command_helpers;
+mod new_project;
 
 use clap::{Parser, Subcommand};
-use command_helpers::{display_error, make, new_project, vexcom_command};
+use command_helpers::{display_error, make, vexcom_command};
+use new_project::new_project;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
