@@ -20,7 +20,7 @@ struct Cli {
 enum ConductorCommands {
     /// Create a New Project. Alias: "n"
     #[command(alias("n"))]
-    New,
+    New { directory: String },
 }
 
 #[derive(Subcommand)]
@@ -47,8 +47,8 @@ fn main() {
         Commands::Make => make(),
         Commands::VexcomTest => vexcom_command("test"),
         Commands::Conductor {
-            command: ConductorCommands::New,
-        } => new_project(),
+            command: ConductorCommands::New { directory },
+        } => new_project(&directory),
     };
 
     match command_result {
