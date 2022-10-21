@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use semver::Version;
 use serde::Deserialize;
 
@@ -34,7 +32,21 @@ struct TemplateData {
 }
 
 pub fn new_project() -> Result<String, Box<dyn std::error::Error>> {
-    let resp = reqwest::blocking::get(MAINLINE_LOCATION)?.json::<Vec<TemplateData>>()?;
-    println!("{:#?}", resp);
+    let mainline = reqwest::blocking::get(MAINLINE_LOCATION)?.json::<Vec<TemplateData>>()?;
+    // Assuming for now that we only care about PROS V5 kernels and okapilib
+    let mut kernels = mainline
+        .iter()
+        .filter(|&x| x.target == "v5" && x.name == "kernel")
+        .collect::<Vec<&TemplateData>>();
+    kernels.sort_by(|a, b| b.version.cmp(&a.version)); // sort as b>a to get largest first
+    let to_install = kernels
+        .first()
+        .ok_or("Could not find any valic kernels to install")?;
+
+    let mut tmpfile = tempfile::tempfile().unwrap();
+    reqwest::blocking::get(&to_install.metadata.location)?.copy_to(&mut tmpfile)?;
+    let mut zip = zip::ZipArchive::new(tmpfile)?;
+
+    zip.extract("./pros_project")?;
     Ok("".to_string())
 }
