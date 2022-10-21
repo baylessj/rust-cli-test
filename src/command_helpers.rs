@@ -14,11 +14,6 @@ pub fn make() -> Result<String, Box<dyn std::error::Error>> {
     Ok(output.status.to_string())
 }
 
-pub fn new_project() -> Result<String, Box<dyn std::error::Error>> {
-    let output = std::process::Command::new("example").output()?;
-    Ok(output.status.to_string())
-}
-
 #[derive(Serialize, Debug)]
 struct ErrorMessage<'a> {
     name: &'a str,
@@ -36,6 +31,6 @@ pub fn display_error(is_json: bool, name: &str, message: String) {
             .unwrap()
         )
     } else {
-        println!("Failed")
+        println!("{}", message)
     }
 }

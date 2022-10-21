@@ -1,7 +1,9 @@
 mod command_helpers;
+mod new_project;
 
 use clap::{Parser, Subcommand};
-use command_helpers::{display_error, make, new_project, vexcom_command};
+use command_helpers::{display_error, make, vexcom_command};
+use new_project::new_project;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -18,7 +20,7 @@ struct Cli {
 enum ConductorCommands {
     /// Create a New Project. Alias: "n"
     #[command(alias("n"))]
-    New,
+    New { directory: String },
 }
 
 #[derive(Subcommand)]
@@ -45,8 +47,8 @@ fn main() {
         Commands::Make => make(),
         Commands::VexcomTest => vexcom_command("test"),
         Commands::Conductor {
-            command: ConductorCommands::New,
-        } => new_project(),
+            command: ConductorCommands::New { directory },
+        } => new_project(&directory),
     };
 
     match command_result {
